@@ -17,8 +17,18 @@ async function evolutionLoop() {
   console.log(`📚 共享知识: ${stats.totalCount} 条`);
   console.log('📊 分布:', JSON.stringify(stats.byProject));
 
-  // Phase 2: 提炼 Genes（模拟观察记录）
-  const observations: ObservationRecord[] = knowledge.slice(0, 10).map((k, i) => ({
+  // Phase 2: 提炼 Genes（从每个项目采样）
+  const byProject = knowledge.reduce((acc, k) => {
+    if (!acc[k.source]) acc[k.source] = [];
+    acc[k.source].push(k);
+    return acc;
+  }, {} as Record<string, typeof knowledge>);
+
+  const sampled = Object.values(byProject).flatMap(items =>
+    items.slice(0, Math.ceil(10 / Object.keys(byProject).length))
+  );
+
+  const observations: ObservationRecord[] = sampled.map((k, i) => ({
     sessionId: `session-${Date.now()}-${i}`,
     timestamp: k.timestamp,
     projectPath: k.source,
