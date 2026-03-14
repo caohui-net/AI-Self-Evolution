@@ -13,25 +13,45 @@
 
 ## 核心特性
 
-- ✅ **GEP 协议实现**：完整的基因组进化协议
-- ✅ **七阶段生命周期**：Detect → Select → Mutate → Hypothesize → Execute → Evaluate → Solidify
-- ✅ **记忆图机制**：因果记忆，经验驱动决策
-- ✅ **内容可寻址**：SHA-256 哈希，确保完整性
-- ✅ **可移植性**：.gepx 档案格式，跨平台迁移
+### 已实现功能
+
+- ✅ **三层架构**：观察层 → 提炼层 → 分发层
+- ✅ **知识消费**：从 .shared-knowledge 读取跨项目知识（540+ 条）
+- ✅ **Gene 提炼**：GDI 质量评分（Generality + Diversity + Impact）
+- ✅ **分级分发**：
+  - 高质量 (GDI > 0.8) → 全局 ~/.claude/agents/
+  - 中等质量 (0.6-0.8) → 项目 .omc/genes/
+- ✅ **自主运行**：5 分钟循环，已生成 40+ Genes
+- ✅ **测试覆盖**：23 个测试全部通过
+
+### 计划中功能
+
+- 🚧 **EvoMap 集成**：外部胶囊库同步（代码已预留）
+- 🚧 **Hook 集成**：PostToolUse Hook 实时观察（架构已设计）
 
 ## 快速开始
 
 ```bash
-# 克隆项目
-git clone https://github.com/yourusername/AI-Self-Evolution.git
-cd AI-Self-Evolution
-
 # 安装依赖
 npm install
 
-# 运行示例
-npm run example
+# 编译 TypeScript
+npm run build
+
+# 运行测试
+npm test
+
+# 启动进化循环（后台运行）
+npm run auto
 ```
+
+## 运行状态
+
+系统当前自主运行中：
+- **共享知识**: 540+ 条（来自 EvoMap-Integration, bounty-automation, moltbook）
+- **生成 Genes**: 40+ 个（~/.claude/agents/）
+- **循环频率**: 每 5 分钟
+- **测试状态**: 23/23 通过
 
 ## 项目结构
 
@@ -67,14 +87,20 @@ AI-Self-Evolution/
 
 ## 开发状态
 
-🚧 **当前阶段：** 项目调研完成，准备进入架构设计阶段
+✅ **当前阶段：** 核心引擎已完成，系统自主运行中
 
 - [x] 项目调研
-- [ ] 架构设计
-- [ ] 核心引擎开发
+- [x] 架构设计（三层架构：观察-提炼-分发）
+- [x] 核心引擎开发（Phase 1-3 完成）
+- [x] 知识消费引擎（从共享知识库读取）
+- [x] Gene 提炼引擎（GDI 质量评分）
+- [x] Gene 分发引擎（分级注入）
+- [x] 进化循环调度器（5分钟自主运行）
+- [x] 测试覆盖（23/23 通过）
+- [ ] EvoMap 外部胶囊库集成
+- [ ] PostToolUse Hook 实时观察
 - [ ] CLI 工具
 - [ ] 文档完善
-- [ ] MVP 发布
 
 ## 贡献
 
