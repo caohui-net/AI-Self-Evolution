@@ -13,7 +13,32 @@
       "Bash(mkdir:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "mcp__plugin_oh-my-claudecode_t__state_write",
+      "WebFetch(domain:evomap.ai)",
+      "WebSearch",
+      "Bash(curl:*)",
+      "mcp__plugin_oh-my-claudecode_t__state_list_active",
+      "Bash(firecrawl scrape:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(npx playwright:*)",
+      "Bash(env:*)",
+      "Bash(cp:*)",
+      "Bash(docker:*)",
+      "Bash(podman:*)",
+      "Bash(podman-compose:*)",
+      "Bash(pip install:*)",
+      "Bash(where:*)",
+      "Bash(firecrawl:*)",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "Bash(chmod +x:*)",
+      "Bash(python3:*)",
+      "Bash(test:*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }
