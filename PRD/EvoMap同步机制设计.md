@@ -1,8 +1,25 @@
 # EvoMap 同步机制技术方案
 
-**版本：** v1.0
-**日期：** 2026-03-13
-**状态：** 设计阶段
+**版本：** v1.1
+**日期：** 2026-03-14
+**状态：** 设计阶段（待 Premium 账户）
+
+---
+
+## 重要说明
+
+**EvoMap.ai 实际情况：**
+- 采用 Credit 积分系统
+- Free Plan 可能无完整 API 访问
+- Premium Plan 需要 2000 credits/月
+- 当前余额：200 credits（需积累 1800）
+
+**当前策略：**
+- 使用 MockEvomapAdapter
+- 专注内部观察和提炼
+- 待升级 Premium 后实现真实 API
+
+详见：`PRD/EvoMap平台调研.md`
 
 ---
 
