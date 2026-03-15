@@ -16,18 +16,18 @@
 ### 已实现功能
 
 - ✅ **三层架构**：观察层 → 提炼层 → 分发层
-- ✅ **知识消费**：从 .shared-knowledge 读取跨项目知识（540+ 条）
-- ✅ **Gene 提炼**：GDI 质量评分（Generality + Diversity + Impact）
+- ✅ **真实Hook集成**：PostToolUse Hook 自动捕获工具使用观察
+- ✅ **研究驱动GDI**：Reliability(40%) + Reusability(30%) + Impact(30%)
 - ✅ **分级分发**：
-  - 高质量 (GDI > 0.8) → 全局 ~/.claude/agents/
-  - 中等质量 (0.6-0.8) → 项目 .omc/genes/
-- ✅ **自主运行**：5 分钟循环，已生成 40+ Genes
-- ✅ **测试覆盖**：23 个测试全部通过
+  - 高质量 (GDI ≥ 0.75) → 全局 ~/.claude/agents/
+  - 中等质量 (0.55-0.75) → 项目 .omc/genes/
+  - 低质量 (< 0.55) → 归档 .omc/observations/archived/
+- ✅ **自主运行**：5 分钟循环，基于真实观察生成Genes
+- ✅ **测试覆盖**：24 个测试全部通过
 
 ### 计划中功能
 
 - 🚧 **EvoMap 集成**：外部胶囊库同步（代码已预留）
-- 🚧 **Hook 集成**：PostToolUse Hook 实时观察（架构已设计）
 
 ## 快速开始
 
@@ -48,10 +48,11 @@ npm run auto
 ## 运行状态
 
 系统当前自主运行中：
-- **共享知识**: 540+ 条（来自 EvoMap-Integration, bounty-automation, moltbook）
-- **生成 Genes**: 40+ 个（~/.claude/agents/）
+- **观察来源**: PostToolUse Hook 实时捕获
+- **GDI评分**: 研究驱动的三维评分系统
 - **循环频率**: 每 5 分钟
-- **测试状态**: 23/23 通过
+- **测试状态**: 24/24 通过
+- **最新更新**: 2026-03-15 真实Hook集成完成
 
 ## 项目结构
 
@@ -87,18 +88,18 @@ AI-Self-Evolution/
 
 ## 开发状态
 
-✅ **当前阶段：** 核心引擎已完成，系统自主运行中
+✅ **当前阶段：** 真实Hook集成完成，系统基于实际观察自主进化
 
 - [x] 项目调研
 - [x] 架构设计（三层架构：观察-提炼-分发）
 - [x] 核心引擎开发（Phase 1-3 完成）
-- [x] 知识消费引擎（从共享知识库读取）
-- [x] Gene 提炼引擎（GDI 质量评分）
-- [x] Gene 分发引擎（分级注入）
+- [x] 观察引擎（ObservationReader 读取真实Hook捕获）
+- [x] Gene 提炼引擎（研究驱动的GDI评分系统）
+- [x] Gene 分发引擎（三级分发：全局/项目/归档）
 - [x] 进化循环调度器（5分钟自主运行）
-- [x] 测试覆盖（23/23 通过）
+- [x] PostToolUse Hook 实时观察集成
+- [x] 测试覆盖（24/24 通过）
 - [ ] EvoMap 外部胶囊库集成
-- [ ] PostToolUse Hook 实时观察
 - [ ] CLI 工具
 - [ ] 文档完善
 
