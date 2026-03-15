@@ -38,7 +38,19 @@
       "Bash(chmod +x:*)",
       "Bash(python3:*)",
       "Bash(test:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "mcp__plugin_oh-my-claudecode_t__lsp_diagnostics",
+      "Bash(npx tsc:*)",
+      "Bash(rm:*)",
+      "Bash(python:*)",
+      "mcp__plugin_oh-my-claudecode_t__lsp_diagnostics_directory",
+      "mcp__plugin_oh-my-claudecode_t__state_clear",
+      "Bash(grep:*)",
+      "Bash(do grep:*)",
+      "Bash(xargs -I {} sh -c 'echo \"\"=== {} ===\"\"; cat {}')",
+      "Bash(pkill:*)",
+      "Bash(head:*)",
+      "Bash(xargs kill)"
     ]
   }
 }

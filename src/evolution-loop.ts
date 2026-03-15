@@ -1,65 +1,44 @@
-import { KnowledgeReader } from './consumer/knowledge-reader';
+import { ObservationReader } from './observer/observation-reader';
 import { GeneExtractor } from './distiller/gene-extractor';
 import { GeneInjector } from './distributor/gene-injector';
-import { ObservationRecord } from './types/observation';
+import * as path from 'path';
 
 const LOOP_INTERVAL = 300000; // 5分钟
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 async function evolutionLoop() {
   console.log('🧬 AI-Self-Evolution 进化循环');
   console.log('时间:', new Date().toLocaleString('zh-CN'));
 
-  // Phase 1: 读取共享知识
-  const reader = new KnowledgeReader();
-  const knowledge = reader.readAll();
-  const stats = reader.getStats();
+  // Phase 1: 读取真实观察记录
+  const reader = new ObservationReader(PROJECT_ROOT);
+  const observations = await reader.readRecent(24);
 
-  console.log(`📚 共享知识: ${stats.totalCount} 条`);
-  console.log('📊 分布:', JSON.stringify(stats.byProject));
+  console.log(`📊 观察记录: ${observations.length} 条`);
 
-  // Phase 2: 提炼 Genes（从每个项目采样）
-  const byProject = knowledge.reduce((acc, k) => {
-    if (!acc[k.source]) acc[k.source] = [];
-    acc[k.source].push(k);
-    return acc;
-  }, {} as Record<string, typeof knowledge>);
+  if (observations.length === 0) {
+    console.log('⚠️  无观察记录，等待下一轮');
+    return;
+  }
 
-  const sampled = Object.values(byProject).flatMap(items =>
-    items.slice(0, Math.ceil(10 / Object.keys(byProject).length))
-  );
-
-  const observations: ObservationRecord[] = sampled.map((k, i) => ({
-    sessionId: `session-${Date.now()}-${i}`,
-    timestamp: k.timestamp,
-    projectPath: k.source,
-    context: {
-      task: 'knowledge-sharing',
-      tools: ['sync-knowledge'],
-      agents: ['auto-sync'],
-      techStack: ['typescript', 'node']
-    },
-    patterns: {
-      problemType: 'knowledge-sharing',
-      solutionApproach: 'auto-sync',
-      constraints: []
-    },
-    outcome: {
-      success: true,
-      evidence: 'synced',
-      artifacts: [k.file]
-    }
-  }));
-
+  // Phase 2: 提炼 Genes
   const extractor = new GeneExtractor();
   const genes = extractor.extract(observations);
   console.log(`🧬 提炼 Genes: ${genes.length} 个`);
 
   // Phase 3: 分发 Genes
   const injector = new GeneInjector();
+  let globalCount = 0, projectCount = 0, archivedCount = 0;
+
   for (const gene of genes) {
-    await injector.injectGene(gene, gene.source);
+    if (gene.gdi >= 0.75) globalCount++;
+    else if (gene.gdi >= 0.55) projectCount++;
+    else archivedCount++;
+
+    await injector.injectGene(gene, PROJECT_ROOT);
   }
-  console.log(`💉 分发完成`);
+
+  console.log(`💉 分发: ${globalCount} 全局, ${projectCount} 项目, ${archivedCount} 归档`);
   console.log('✅ 本轮完成\n');
 }
 

@@ -40,7 +40,7 @@ describe('GeneExtractor', () => {
     expect(genes[0].gdi).toBeGreaterThan(0);
   });
 
-  it('should filter out low GDI genes', () => {
+  it('should extract all genes including low quality ones', () => {
     const observations: ObservationRecord[] = [
       {
         projectPath: '/test',
@@ -67,6 +67,7 @@ describe('GeneExtractor', () => {
 
     const genes = extractor.extract(observations);
 
-    expect(genes.every(g => g.gdi > 0.5)).toBe(true);
+    expect(genes.length).toBe(1);
+    expect(genes[0].gdi).toBeLessThan(0.75);
   });
 });

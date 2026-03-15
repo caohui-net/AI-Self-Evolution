@@ -5,11 +5,17 @@ export interface Gene {
   gdi: number;
   source: string;
   extractedAt: string;
+  metadata?: {
+    reliability: number;
+    reusability: number;
+    impact: number;
+    evidence: string[];
+  };
 }
 
 export interface GDIScore {
-  generality: number;
-  diversity: number;
+  reliability: number;
+  reusability: number;
   impact: number;
   overall: number;
 }

@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node C:\\Users\\Administrator\\.claude\\hooks\\post-tool-use.js \"$ARGUMENTS\""
+          }
+        ]
+      }
+    ]
+  }
+}
