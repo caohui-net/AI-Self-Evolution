@@ -1,6 +1,7 @@
 import { ObservationReader } from './observer/observation-reader';
 import { GeneExtractor } from './distiller/gene-extractor';
-import { GeneInjector } from './distributor/gene-injector';
+import { SkillInjector } from './distributor/skill-injector';
+import { TrajectoryRecorder } from './observer/trajectory-recorder';
 import * as path from 'path';
 
 const LOOP_INTERVAL = 300000; // 5分钟
@@ -26,8 +27,12 @@ async function evolutionLoop() {
   const genes = extractor.extract(observations);
   console.log(`🧬 提炼 Genes: ${genes.length} 个`);
 
-  // Phase 3: 分发 Genes
-  const injector = new GeneInjector();
+  // Phase 3: 记录轨迹（Batch Runner）
+  const recorder = new TrajectoryRecorder(PROJECT_ROOT);
+  observations.forEach((obs, i) => recorder.record(obs, i));
+
+  // Phase 4: 分发为可执行 Skill（hermes-agent 兼容）
+  const injector = new SkillInjector();
   let globalCount = 0, projectCount = 0, archivedCount = 0;
 
   for (const gene of genes) {
@@ -35,10 +40,10 @@ async function evolutionLoop() {
     else if (gene.gdi >= 0.55) projectCount++;
     else archivedCount++;
 
-    await injector.injectGene(gene, PROJECT_ROOT);
+    await injector.injectAsSkill(gene, PROJECT_ROOT);
   }
 
-  console.log(`💉 分发: ${globalCount} 全局, ${projectCount} 项目, ${archivedCount} 归档`);
+  console.log(`💉 分发: ${globalCount} 全局Skill, ${projectCount} 项目Skill, ${archivedCount} 归档`);
   console.log('✅ 本轮完成\n');
 }
 
