@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node C:\\Users\\Administrator\\.claude\\hooks\\post-tool-use.js \"$ARGUMENTS\""
+            "command": "node /home/caohui/projects/AI-Self-Evolution/.claude/hooks/post-tool-use.js"
           }
         ]
       }

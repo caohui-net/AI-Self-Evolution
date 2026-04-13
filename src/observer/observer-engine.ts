@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ObservationRecord, ExternalMatch } from '../types/observation';
+import { ObservationRecord, ExternalMatch, UserProfile } from '../types/observation';
 import { TechStackDetector } from './tech-stack-detector';
 import { AdaptabilityEvaluator } from './adaptability-evaluator';
 import { EvomapAdapter, EvoCapsule } from '../adapters/evomap-adapter';
@@ -32,6 +32,9 @@ export class ObserverEngine {
     const techStack = this.techStackDetector.detect(projectPath);
     const externalMatches = await this.matchExternalCapsules(techStack, task);
 
+    const problemType = this.inferProblemType(task);
+    const userProfile = this.buildUserProfile(projectPath, tools, success, problemType);
+
     const record: ObservationRecord = {
       projectPath,
       sessionId,
@@ -39,11 +42,12 @@ export class ObserverEngine {
       context: { task, tools, agents, techStack },
       outcome: { success, evidence, artifacts },
       patterns: {
-        problemType: this.inferProblemType(task),
+        problemType,
         solutionApproach: tools.join(','),
         constraints: []
       },
-      externalMatches
+      externalMatches,
+      userProfile
     };
 
     await this.saveObservation(projectPath, record);
@@ -73,6 +77,35 @@ export class ObserverEngine {
     }
 
     return matches.filter(m => m.recommendAction !== 'ignore');
+  }
+
+  private buildUserProfile(projectPath: string, tools: string[], success: boolean, problemType: string): UserProfile {
+    const profilePath = path.join(projectPath, '.omc', 'user-profile.json');
+    let profile: UserProfile = {
+      preferredTools: {},
+      successPatterns: [],
+      failurePatterns: [],
+      lastUpdated: new Date().toISOString()
+    };
+
+    if (fs.existsSync(profilePath)) {
+      try { profile = JSON.parse(fs.readFileSync(profilePath, 'utf-8')); } catch {}
+    }
+
+    for (const tool of tools) {
+      profile.preferredTools[tool] = (profile.preferredTools[tool] || 0) + 1;
+    }
+
+    if (success && !profile.successPatterns.includes(problemType)) {
+      profile.successPatterns.push(problemType);
+    } else if (!success && !profile.failurePatterns.includes(problemType)) {
+      profile.failurePatterns.push(problemType);
+    }
+
+    profile.lastUpdated = new Date().toISOString();
+    fs.mkdirSync(path.dirname(profilePath), { recursive: true });
+    fs.writeFileSync(profilePath, JSON.stringify(profile, null, 2));
+    return profile;
   }
 
   private inferProblemType(task: string): string {
