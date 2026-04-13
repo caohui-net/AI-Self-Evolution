@@ -2,47 +2,58 @@ import { ObservationReader } from './observer/observation-reader';
 import { GeneExtractor } from './distiller/gene-extractor';
 import { SkillInjector } from './distributor/skill-injector';
 import { TrajectoryRecorder } from './observer/trajectory-recorder';
+import * as fs from 'fs';
 import * as path from 'path';
 
 const LOOP_INTERVAL = 300000; // 5分钟
 const PROJECT_ROOT = path.resolve(__dirname, '..');
+const PROJECTS_BASE = path.resolve(PROJECT_ROOT, '..');
+
+function discoverProjects(): string[] {
+  const projects: string[] = [];
+  try {
+    for (const entry of fs.readdirSync(PROJECTS_BASE, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const obsDir = path.join(PROJECTS_BASE, entry.name, '.omc', 'observations');
+      if (fs.existsSync(obsDir)) {
+        projects.push(path.join(PROJECTS_BASE, entry.name));
+      }
+    }
+  } catch {}
+  return projects;
+}
 
 async function evolutionLoop() {
   console.log('🧬 AI-Self-Evolution 进化循环');
   console.log('时间:', new Date().toLocaleString('zh-CN'));
 
-  // Phase 1: 读取真实观察记录
-  const reader = new ObservationReader(PROJECT_ROOT);
-  const observations = await reader.readRecent(24);
+  const projects = discoverProjects();
+  console.log(`🔍 扫描项目: ${projects.length} 个`);
 
-  console.log(`📊 观察记录: ${observations.length} 条`);
-
-  if (observations.length === 0) {
-    console.log('⚠️  无观察记录，等待下一轮');
-    return;
-  }
-
-  // Phase 2: 提炼 Genes
-  const extractor = new GeneExtractor();
-  const genes = extractor.extract(observations);
-  console.log(`🧬 提炼 Genes: ${genes.length} 个`);
-
-  // Phase 3: 记录轨迹（Batch Runner）
-  const recorder = new TrajectoryRecorder(PROJECT_ROOT);
-  observations.forEach((obs, i) => recorder.record(obs, i));
-
-  // Phase 4: 分发为可执行 Skill（hermes-agent 兼容）
   const injector = new SkillInjector();
-  let globalCount = 0, projectCount = 0, archivedCount = 0;
+  const recorder = new TrajectoryRecorder(PROJECT_ROOT);
+  let totalObs = 0, globalCount = 0, projectCount = 0, archivedCount = 0;
 
-  for (const gene of genes) {
-    if (gene.gdi >= 0.75) globalCount++;
-    else if (gene.gdi >= 0.55) projectCount++;
-    else archivedCount++;
+  for (const projectPath of projects) {
+    const reader = new ObservationReader(projectPath);
+    const observations = await reader.readRecent(24);
+    if (observations.length === 0) continue;
 
-    await injector.injectAsSkill(gene, PROJECT_ROOT);
+    totalObs += observations.length;
+    observations.forEach((obs, i) => recorder.record(obs, i));
+
+    const extractor = new GeneExtractor();
+    const genes = extractor.extract(observations);
+
+    for (const gene of genes) {
+      if (gene.gdi >= 0.75) globalCount++;
+      else if (gene.gdi >= 0.55) projectCount++;
+      else archivedCount++;
+      await injector.injectAsSkill(gene, projectPath);
+    }
   }
 
+  console.log(`📊 观察记录: ${totalObs} 条`);
   console.log(`💉 分发: ${globalCount} 全局Skill, ${projectCount} 项目Skill, ${archivedCount} 归档`);
   console.log('✅ 本轮完成\n');
 }

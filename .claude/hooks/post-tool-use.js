@@ -2,14 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// 从环境变量获取工具调用信息
 const toolName = process.env.TOOL_NAME || 'unknown';
-const toolArgs = process.env.TOOL_ARGS || '{}';
 const toolResult = process.env.TOOL_RESULT || '';
 const sessionId = process.env.SESSION_ID || 'unknown';
 const projectPath = process.cwd();
 
-// 构造观察记录
 const observation = {
   projectPath,
   sessionId,
@@ -21,7 +18,7 @@ const observation = {
     techStack: []
   },
   outcome: {
-    success: !toolResult.includes('error'),
+    success: !toolResult.toLowerCase().includes('error'),
     evidence: toolResult.slice(0, 500),
     artifacts: []
   },
@@ -32,13 +29,11 @@ const observation = {
   }
 };
 
-// 保存到 .omc/observations/
+// 写入各自项目目录
 const obsDir = path.join(projectPath, '.omc', 'observations');
 fs.mkdirSync(obsDir, { recursive: true });
-
-const filename = `obs-${Date.now()}.json`;
 fs.writeFileSync(
-  path.join(obsDir, filename),
+  path.join(obsDir, `obs-${Date.now()}.json`),
   JSON.stringify(observation, null, 2)
 );
 
